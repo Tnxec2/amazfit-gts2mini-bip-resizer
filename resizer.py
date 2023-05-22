@@ -9,9 +9,10 @@ class Resizer:
         (self.scalex, self.scaley) = scale
         import argparse
         parser = argparse.ArgumentParser()
+        parser.add_argument('--removealpha', action='store_true', help='remove alpha channel from images')
         parser.add_argument('path', nargs='+', help='path to image or directory for scale')
         self.args = parser.parse_args()
-
+        print(f"remove alpha: {self.args.removealpha}")
 
     def resize(self):
         for inputFileName in self.args.path:
@@ -65,7 +66,8 @@ class Resizer:
         # if original image don't has pixels with alpha chanel,
         # then remove alpha chanel from resized image
         #
-        if not self.hasHalfTransparency(im):
+        
+        if self.args.removealpha or not self.hasHalfTransparency(im):
             widthR, heightR = imResize.size
             for y in range(heightR):
                 for x in range(widthR):
