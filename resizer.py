@@ -36,14 +36,15 @@ class Resizer:
 
     def resizeDirectory(self, path: str):
         dirs = os.listdir( path )
-        outputDir = os.path.join(path, self.outputdir)
-        if not os.path.exists(outputDir):
-            os.mkdir(outputDir)
         for item in dirs:
             self.resizeFile(path+item)
 
 
     def resizeFile(self, filename: str):
+        path = os.path.dirname(filename)
+        outputDir = os.path.join(path, self.outputdir)
+        if not os.path.exists(outputDir):
+            os.mkdir(outputDir)
         if os.path.isfile(filename):
             if (filename.lower().endswith('.png')):
                 self.resizeImage(filename)
