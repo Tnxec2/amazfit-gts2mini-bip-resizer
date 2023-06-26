@@ -10,9 +10,12 @@ class Resizer:
         import argparse
         parser = argparse.ArgumentParser()
         parser.add_argument('--removealpha', action='store_true', help='remove alpha channel from images')
+        parser.add_argument('--noscale', action='store_true', help='dont resize images, can be combinated with --removealpha')
         parser.add_argument('path', nargs='+', help='path to image or directory for scale')
         self.args = parser.parse_args()
         print(f"remove alpha: {self.args.removealpha}")
+        print(f"noscale: {self.args.noscale}")
+        
 
     def resize(self):
         for inputFileName in self.args.path:
@@ -57,12 +60,15 @@ class Resizer:
         path = os.path.dirname(filename)
         outputDir = os.path.join(path, self.outputdir)
         basename = os.path.basename(filename)
-        name, ext = os.path.splitext(basename)
         print(f"resize: {filename}")
         im = Image.open(filename)
-        width, height = im.size
-        antialiased = Image.LANCZOS
-        imResize = im.resize(( math.ceil(width * self.scalex), math.ceil(height * self.scaley)), antialiased)
+
+        if not self.args.noscale:
+            width, height = im.size
+            antialiased = Image.LANCZOS
+            imResize = im.resize(( math.ceil(width * self.scalex), math.ceil(height * self.scaley)), antialiased)
+        else:
+            imResize = im
         #
         # if original image don't has pixels with alpha chanel,
         # then remove alpha chanel from resized image
