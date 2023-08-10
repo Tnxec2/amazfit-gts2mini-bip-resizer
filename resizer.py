@@ -61,7 +61,8 @@ class Resizer:
         outputDir = os.path.join(path, self.outputdir)
         basename = os.path.basename(filename)
         print(f"resize: {filename}")
-        im = Image.open(filename)
+
+        im = Image.open(filename).convert('RGBA')
 
         if not self.args.noscale:
             width, height = im.size
