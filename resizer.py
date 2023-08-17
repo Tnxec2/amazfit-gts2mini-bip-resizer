@@ -4,8 +4,9 @@ from typing import Tuple
 import math
 
 class Resizer:
-    def __init__(self, outputdir: str, scale: Tuple[float, float]):
+    def __init__(self, outputdir: str, scale: Tuple[float, float], backgroundcolor: Tuple[int, int, int] = (255,255,255) ):
         self.outputdir = outputdir
+        self.backgroundcolor = backgroundcolor
         (self.scalex, self.scaley) = scale
         import argparse
         parser = argparse.ArgumentParser()
@@ -86,6 +87,10 @@ class Resizer:
                         imResize.putpixel(coordinate, (r, g, b, 0))
                     else:
                         imResize.putpixel(coordinate, (r, g, b, 255))
+        if self.backgroundcolor:
+            background = Image.new('RGBA', imResize.size, self.backgroundcolor)
+            imResize = Image.alpha_composite(background, imResize)
+            
         imResize.save(os.path.join(outputDir, basename))
 
 
