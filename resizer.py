@@ -3,19 +3,25 @@ import os, sys
 from typing import Tuple
 import math
 
+
 class Resizer:
-    def __init__(self, outputdir: str, scale: Tuple[float, float], backgroundcolor = None ):
+    def __init__(self, 
+                 outputdir: str, 
+                 scale: Tuple[float, float], 
+                 backgroundcolor = None, 
+                 removealpha = False, 
+                 invert = False, 
+                 noscale = False ):
         self.outputdir = outputdir
         self.backgroundcolor = backgroundcolor
+        self.removealpha = removealpha
+        self.invert = invert
+        self.noscale = noscale
         (self.scalex, self.scaley) = scale
         import argparse
         parser = argparse.ArgumentParser()
-        parser.add_argument('--removealpha', action='store_true', help='remove alpha channel from images')
-        parser.add_argument('--noscale', action='store_true', help='dont resize images, can be combinated with --removealpha')
         parser.add_argument('path', nargs='+', help='path to image or directory for scale')
         self.args = parser.parse_args()
-        print(f"remove alpha: {self.args.removealpha}")
-        print(f"noscale: {self.args.noscale}")
         
 
     def resize(self):
@@ -65,18 +71,22 @@ class Resizer:
 
         im = Image.open(filename).convert('RGBA')
 
-        if not self.args.noscale:
+        imResize = im
+
+        if not self.noscale:
             width, height = im.size
             antialiased = Image.LANCZOS
             imResize = im.resize(( math.ceil(width * self.scalex), math.ceil(height * self.scaley)), antialiased)
-        else:
-            imResize = im
+
+        if self.invert:
+            imResize = self.invertImage(imResize)
+
         #
         # if original image don't has pixels with alpha chanel,
         # then remove alpha chanel from resized image
         #
         
-        if self.args.removealpha or not self.hasHalfTransparency(im):
+        if self.removealpha or not self.hasHalfTransparency(im):
             widthR, heightR = imResize.size
             for y in range(heightR):
                 for x in range(widthR):
@@ -86,12 +96,32 @@ class Resizer:
                     if a < 128:
                         imResize.putpixel(coordinate, (r, g, b, 0))
                     else:
-                        imResize.putpixel(coordinate, (r, g, b, 255))
-        if self.backgroundcolor:
+                        if self.backgroundcolor:
+                            (br, bg, bb) = self.backgroundcolor
+                            alpha = a/255
+                            R = int(br * (1 - alpha) + r * alpha)
+                            G = int(bg * (1 - alpha) + g * alpha)
+                            B = int(bb * (1 - alpha) + b * alpha)
+                            imResize.putpixel(coordinate, (R, G, B))
+                        else:
+                            imResize.putpixel(coordinate, (r, g, b, 255))
+        elif self.backgroundcolor:
             background = Image.new('RGBA', imResize.size, self.backgroundcolor)
             imResize = Image.alpha_composite(background, imResize)
+
             
         imResize.save(os.path.join(outputDir, basename))
+
+
+    def invertImage(self, img: Image):
+        r, g, b, a = img.split()
+        r, g, b = map(self.invertPoint, (r, g, b))
+        return Image.merge(img.mode, (r, g, b, a))
+    
+
+    def invertPoint(self, image):
+        return image.point(lambda p: 255 - p)
+
 
 
     def hasHalfTransparency(self, image):
