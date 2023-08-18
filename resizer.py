@@ -4,7 +4,7 @@ from typing import Tuple
 import math
 
 class Resizer:
-    def __init__(self, outputdir: str, scale: Tuple[float, float], backgroundcolor: Tuple[int, int, int] = (255,255,255) ):
+    def __init__(self, outputdir: str, scale: Tuple[float, float], backgroundcolor = None ):
         self.outputdir = outputdir
         self.backgroundcolor = backgroundcolor
         (self.scalex, self.scaley) = scale
