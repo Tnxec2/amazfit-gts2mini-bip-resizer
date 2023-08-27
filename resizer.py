@@ -7,7 +7,7 @@ import math
 class Resizer:
     def __init__(self, 
                  outputdir: str, 
-                 scale: Tuple[float, float], 
+                 scale: Tuple[float, float] = None, 
                  backgroundcolor = None, 
                  removealpha = False, 
                  invert = False, 
@@ -147,6 +147,8 @@ class Resizer:
 
     
     def processJsonLine(self, line: str):
+        if self.noscale:
+            return line
         scale = self.getScale(line)
         if scale:
             return self.resizeJsonData(line, scale)
@@ -199,11 +201,4 @@ class Resizer:
         splits = line.split(':')
         value = splits[1].strip()
         return  (splits[0], value.strip(','), self.getJsonEnding(line)) 
-    
-
-    def isFirst(self, name: str):
-        try:
-            return True if int(name) == 0 else False
-        except:
-            return False
-    
+  
