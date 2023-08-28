@@ -1,4 +1,5 @@
 import argparse
+from resizer import Resizer
 
 parser = argparse.ArgumentParser()
 parser.add_argument('path', nargs='+', help='path to image or directory for scale')
