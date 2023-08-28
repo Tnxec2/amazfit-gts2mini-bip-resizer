@@ -15,7 +15,7 @@ scaleGTS2toBIP3 = (240 / 348, 280 / 442)
 outputDirName = 'bip3'
 
 resizer = Resizer(outputDirName, scaleGTS2toBIP3)
-resizer.resize()
+resizer.process()
     
 
 

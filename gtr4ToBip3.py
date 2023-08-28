@@ -15,7 +15,7 @@ scaleFactor = (280 / 460, 280 / 460)
 outputDirName = 'bip3'
 
 resizer = Resizer(outputDirName, scaleFactor)
-resizer.resize()
+resizer.process()
     
 
 

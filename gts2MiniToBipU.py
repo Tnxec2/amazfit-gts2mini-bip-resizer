@@ -15,4 +15,4 @@ scaleGTS2MINItoBIPU = (302 / 306,  320 / 354)
 outputDirName = 'bipU'
 
 resizer = Resizer(outputDirName, scaleGTS2MINItoBIPU)
-resizer.resize()
+resizer.process()

@@ -2,13 +2,13 @@ from PIL import Image
 import os, sys
 from typing import Tuple
 import math
-
+import argparse
 
 class Resizer:
     def __init__(self, 
-                 outputdir: str, 
+                 outputdir: str = 'resized', 
                  scale: Tuple[float, float] = None, 
-                 backgroundcolor = None, 
+                 backgroundcolor = None, # tuple(0-255, 0-255, 0-255) : R,G,B 
                  removealpha = False, 
                  invert = False, 
                  noscale = False ):
@@ -17,14 +17,15 @@ class Resizer:
         self.removealpha = removealpha
         self.invert = invert
         self.noscale = noscale
-        (self.scalex, self.scaley) = scale
-        import argparse
+        if (scale):
+            (self.scalex, self.scaley) = scale
+
         parser = argparse.ArgumentParser()
         parser.add_argument('path', nargs='+', help='path to image or directory for scale')
-        self.args = parser.parse_args()
-        
+        self.args, unknown = parser.parse_known_args()
+     
 
-    def resize(self):
+    def process(self):
         for inputFileName in self.args.path:
             isDirectory = os.path.isdir(inputFileName)
             isFile = os.path.isfile(inputFileName)
@@ -201,4 +202,4 @@ class Resizer:
         splits = line.split(':')
         value = splits[1].strip()
         return  (splits[0], value.strip(','), self.getJsonEnding(line)) 
-  
+
