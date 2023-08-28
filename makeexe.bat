@@ -1,0 +1,1 @@
+pyinstaller --noconfirm --onefile --console --icon "assets\icon.ico" --distpath "exe"  "resize.py"
