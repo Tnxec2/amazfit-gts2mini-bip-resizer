@@ -11,17 +11,27 @@ class Resizer:
                  backgroundcolor = None, # tuple(0-255, 0-255, 0-255) : R,G,B 
                  removealpha = False, 
                  invert = False, 
-                 noscale = False ):
+                 noscale = False,
+                noantialiased = False ):
         self.outputdir = outputdir
         self.backgroundcolor = backgroundcolor
         self.removealpha = removealpha
         self.invert = invert
         self.noscale = noscale
+        self.noantialiased = noantialiased
         if (scale):
             (self.scalex, self.scaley) = scale
 
         parser = argparse.ArgumentParser()
         parser.add_argument('path', nargs='+', help='path to image or directory for scale')
+        parser.add_argument('-n', '--noscale', action='store_true', help='no scale images')
+        parser.add_argument('-i', '--invert', action='store_true', help='invert color of images')
+        parser.add_argument('-r', '--removealpha', action='store_true', help='remove alpha channel of images')
+        parser.add_argument('-na', '--noantialiased', action='store_true', help='not antialiased scale')
+        parser.add_argument('-b', '--backgroundcolor', type=int, nargs=3, action='append', help='background color for replace alpha channel, format: R G B, example: -b 255 255 0)')
+        parser.add_argument('-x', '--scalex', type=float, help='scale factor horizontaly, examle 0.5')
+        parser.add_argument('-y', '--scaley', type=float, help='scale factor verticaly, example 0.5')
+        parser.add_argument('-o', '--outputdir', type=str, default='resized', help='output directory name, default = resized')
         self.args, unknown = parser.parse_known_args()
      
 
@@ -76,7 +86,7 @@ class Resizer:
 
         if not self.noscale:
             width, height = im.size
-            antialiased = Image.LANCZOS
+            antialiased = None if self.noantialiased else Image.LANCZOS 
             imResize = im.resize(( math.ceil(width * self.scalex), math.ceil(height * self.scaley)), antialiased)
 
         if self.invert:
