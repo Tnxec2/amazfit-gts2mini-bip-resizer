@@ -4,9 +4,9 @@ from resizer import Resizer
 
 
 
-temp = (280 / 240, 280 / 240)
+temp = (240 / 348, 280 / 442)
 
 outputDirName = 'temp'
 
-resizer = Resizer(outputDirName, temp, backgroundcolor=(255,255,255), noscale=True, invert=True, removealpha=True)
+resizer = Resizer(outputDirName, temp, backgroundcolor=(236,237,199), removealpha=True)
 resizer.process()

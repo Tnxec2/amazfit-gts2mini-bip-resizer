@@ -10,12 +10,14 @@ class Resizer:
                  scale: Tuple[float, float] = None, 
                  backgroundcolor = None, # tuple(0-255, 0-255, 0-255) : R,G,B 
                  removealpha = False, 
+                 alphatreshold = 0,
                  invert = False, 
                  noscale = False,
                 noantialiased = False ):
         self.outputdir = outputdir
         self.backgroundcolor = backgroundcolor
         self.removealpha = removealpha
+        self.alphatreshold = alphatreshold
         self.invert = invert
         self.noscale = noscale
         self.noantialiased = noantialiased
@@ -27,6 +29,7 @@ class Resizer:
         parser.add_argument('-n', '--noscale', action='store_true', help='no scale images')
         parser.add_argument('-i', '--invert', action='store_true', help='invert color of images')
         parser.add_argument('-r', '--removealpha', action='store_true', help='remove alpha channel of images')
+        parser.add_argument('-at', '--alphatreshold', action='store_true', help='value of alpha channel, to use with removealpha param, value: 0-255, example: -at 128')
         parser.add_argument('-na', '--noantialiased', action='store_true', help='not antialiased scale')
         parser.add_argument('-b', '--backgroundcolor', type=int, nargs=3, action='append', help='background color for replace alpha channel, format: R G B, example: -b 255 255 0)')
         parser.add_argument('-x', '--scalex', type=float, help='scale factor horizontaly, examle 0.5')
@@ -99,23 +102,22 @@ class Resizer:
         
         if self.removealpha or not self.hasHalfTransparency(im):
             widthR, heightR = imResize.size
+            alphaTreshold = self.alphatreshold
             for y in range(heightR):
                 for x in range(widthR):
                     coordinate = (x, y)
                     color = imResize.getpixel(coordinate)
                     (r, g, b, a) = color
-                    if a < 128:
+                    if a <= alphaTreshold:
                         imResize.putpixel(coordinate, (r, g, b, 0))
                     else:
-                        if self.backgroundcolor:
-                            (br, bg, bb) = self.backgroundcolor
-                            alpha = a/255
-                            R = int(br * (1 - alpha) + r * alpha)
-                            G = int(bg * (1 - alpha) + g * alpha)
-                            B = int(bb * (1 - alpha) + b * alpha)
-                            imResize.putpixel(coordinate, (R, G, B))
-                        else:
-                            imResize.putpixel(coordinate, (r, g, b, 255))
+                        bgcolor = self.backgroundcolor if self.backgroundcolor else (0, 0, 0)
+                        (br, bg, bb) = bgcolor
+                        alpha = a/255
+                        R = int(br * (1 - alpha) + r * alpha)
+                        G = int(bg * (1 - alpha) + g * alpha)
+                        B = int(bb * (1 - alpha) + b * alpha)
+                        imResize.putpixel(coordinate, (R, G, B))
         elif self.backgroundcolor:
             background = Image.new('RGBA', imResize.size, self.backgroundcolor)
             imResize = Image.alpha_composite(background, imResize)
