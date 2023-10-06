@@ -29,7 +29,7 @@ class Resizer:
         parser.add_argument('-n', '--noscale', action='store_true', help='no scale images')
         parser.add_argument('-i', '--invert', action='store_true', help='invert color of images')
         parser.add_argument('-r', '--removealpha', action='store_true', help='remove alpha channel of images')
-        parser.add_argument('-at', '--alphatreshold', action='store_true', help='value of alpha channel, to use with removealpha param, value: 0-255, example: -at 128')
+        parser.add_argument('-at', '--alphatreshold', type=int, help='value of alpha channel, to use with removealpha param, value: 0-255, example: -at 128')
         parser.add_argument('-na', '--noantialiased', action='store_true', help='not antialiased scale')
         parser.add_argument('-b', '--backgroundcolor', type=int, nargs=3, action='append', help='background color for replace alpha channel, format: R G B, example: -b 255 255 0)')
         parser.add_argument('-x', '--scalex', type=float, help='scale factor horizontaly, examle 0.5')
