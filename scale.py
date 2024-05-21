@@ -10,12 +10,12 @@ from resizer import Resizer
 # bipU: 302 x 320
 # bip3: 240 x 280
 
-scaleGTS2toBIP3 = (240 / 348, 280 / 442)
+scale = (30 / 45, 30 / 45)
 # scaleGTS2toBIP3 = (240 / 348, 240 / 348)
 
-outputDirName = 'bip3'
+outputDirName = 'scale'
 
-resizer = Resizer(outputDirName, scaleGTS2toBIP3, removealpha=True, alphatreshold=128)
+resizer = Resizer(outputDirName, scale, removealpha=True, alphatreshold=128, backgroundcolor=(255,255,255))
 resizer.process()
     
 

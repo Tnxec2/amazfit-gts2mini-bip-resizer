@@ -10,14 +10,20 @@ from resizer import Resizer
 # bipU: 302 x 320
 # bip3: 240 x 280
 
-scaleGTS2MINItoBIP3 = (240 / 306, 280 / 354)
-scaleBIPUtoBIP3 = (240 / 302, 280 / 320)
-scaleGTS2MINItoBIPU = (302 / 306,  320 / 354)
+# scaleGTS2MINItoBIP3 = (240 / 306, 280 / 354)
+# scaleBIPUtoBIP3 = (240 / 302, 280 / 320)
+# scaleGTS2MINItoBIPU = (302 / 306,  320 / 354)
 
+scaleBipUtoBip3OnlyWidth = (240 / 302, 240 / 302)
+
+outputDirName = 'bip3-a'
+
+resizer = Resizer(outputDirName, scaleBipUtoBip3OnlyWidth, removealpha=False, alphatreshold=128)
+resizer.process()
 
 outputDirName = 'bip3'
 
-resizer = Resizer(outputDirName, scaleBIPUtoBIP3)
+resizer = Resizer(outputDirName, scaleBipUtoBip3OnlyWidth, removealpha=True, alphatreshold=128)
 resizer.process()
     
 
