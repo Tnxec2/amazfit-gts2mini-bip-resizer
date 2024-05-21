@@ -1,4 +1,5 @@
 from PIL import Image
+from PIL import ImageOps
 import os, sys
 from typing import Tuple
 import math
@@ -13,7 +14,9 @@ class Resizer:
                  alphatreshold = 0,
                  invert = False, 
                  noscale = False,
-                noantialiased = False ):
+                 noantialiased = False,
+                tintColor = None # (0-255, 0-255, 0-255) : R,G,B 
+                ):
         self.outputdir = outputdir
         self.backgroundcolor = backgroundcolor
         self.removealpha = removealpha
@@ -21,6 +24,7 @@ class Resizer:
         self.invert = invert
         self.noscale = noscale
         self.noantialiased = noantialiased
+        self.tintColor = tintColor
         if (scale):
             (self.scalex, self.scaley) = scale
 
@@ -32,10 +36,14 @@ class Resizer:
         parser.add_argument('-at', '--alphatreshold', type=int, help='value of alpha channel, to use with removealpha param, value: 0-255, example: -at 128')
         parser.add_argument('-na', '--noantialiased', action='store_true', help='not antialiased scale')
         parser.add_argument('-b', '--backgroundcolor', type=int, nargs=3, action='append', help='background color for replace alpha channel, format: R G B, example: -b 255 255 0)')
+        parser.add_argument('-tc', '--tintColor', type=int, nargs=3, action='append', help='color for tint image, format: R G B, example: -tc 255 255 0)')
         parser.add_argument('-x', '--scalex', type=float, help='scale factor horizontaly, examle 0.5')
         parser.add_argument('-y', '--scaley', type=float, help='scale factor verticaly, example 0.5')
         parser.add_argument('-o', '--outputdir', type=str, default='resized', help='output directory name, default = resized')
         self.args, unknown = parser.parse_known_args()
+
+        if not self.alphatreshold:
+            self.alphatreshold = 0
      
 
     def process(self):
@@ -94,6 +102,9 @@ class Resizer:
 
         if self.invert:
             imResize = self.invertImage(imResize)
+        
+        if self.tintColor:
+            imResize = self.tint_image(imResize, self.tintColor)
 
         #
         # if original image don't has pixels with alpha chanel,
@@ -108,6 +119,9 @@ class Resizer:
                     coordinate = (x, y)
                     color = imResize.getpixel(coordinate)
                     (r, g, b, a) = color
+                    if a is None:
+                        a = 0
+                    
                     if a <= alphaTreshold:
                         imResize.putpixel(coordinate, (r, g, b, 0))
                     else:
@@ -135,6 +149,14 @@ class Resizer:
     def invertPoint(self, image):
         return image.point(lambda p: 255 - p)
 
+
+    def tint_image(self, image, color="#FFFFFF"):
+        image.load()
+        r, g, b, alpha = image.split()
+        gray = ImageOps.grayscale(image)
+        result = ImageOps.colorize(gray, (0, 0, 0, 0), color) 
+        result.putalpha(alpha)
+        return result
 
 
     def hasHalfTransparency(self, image):
@@ -174,13 +196,18 @@ class Resizer:
             if key in [
                 'X',
                 'TopLeftX',
+                'CenterX',
                 'BottomRightX',
+                'Spacing',
             ]:
                 return self.scalex
             if key in [
                 'Y',
                 'TopLeftY',
                 'BottomRightY',
+                'CenterY',
+                'PointerCenterOfRotationY',
+                'VerticalOffset',
             ]:
                 return self.scaley
         return None
