@@ -16,9 +16,10 @@ scaleBIPUtoBIP3 = (240 / 302, 280 / 320)
 scaleGTS2MINItoBIPU = (302 / 306,  320 / 354)
 
 
+scale = (240 / 176, 240 / 176)
 outputDirName = 'bip3'
 
-resizer = Resizer(outputDirName, scaleBipOldtoBIP3, noantialiased=True)
+resizer = Resizer(outputDirName, scale, noantialiased=True)
 resizer.process()
     
 
