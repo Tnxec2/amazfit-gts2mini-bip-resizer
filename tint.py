@@ -11,7 +11,7 @@ scale = (24/39, 24/39)
 
 outputDirName = 'tint'
 
-resizer = Resizer(outputDirName, scale, tintColor=(217, 233, 217), removealpha=True, alphatreshold=128, )
+resizer = Resizer(outputDirName, scale, tintColor=(255, 255, 255), removealpha=True, alphatreshold=128, )
 
 resizer.process()
 

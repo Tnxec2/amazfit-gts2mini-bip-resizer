@@ -10,7 +10,7 @@ from resizer import Resizer
 # bipU: 302 x 320
 # bip3: 240 x 280
 
-scale = (0.5, 0.5)
+scale = (20/33, 20/33)
 # scaleGTS2toBIP3 = (240 / 348, 240 / 348)
 
 outputDirName = 'scale'
